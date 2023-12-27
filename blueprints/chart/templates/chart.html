@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Alpha Charts</title>
+    <script src="https://unpkg.com/lightweight-charts@3.2.0/dist/lightweight-charts.standalone.production.js"></script>
+    <style>
+        body.dark-theme {
+  background-color: #222;
+  color: #fff;
+}
+
+#chart-container {
+  width: 100%;
+  height: 70vh;
+  padding: 5%;
+}
+
+@media screen and (max-width: 1920px) {
+  /* Styles for screens up to 1920 pixels wide */
+  #chart-container {
+    width: auto;
+  }
+}
+
+@media screen and (max-width: 1600px) {
+  /* Styles for screens up to 1600 pixels wide */
+  #chart-container {
+    padding: 4%;
+  }
+}
+
+@media screen and (max-width: 1366px) {
+  /* Styles for screens up to 1366 pixels wide */
+  #chart-container {
+    padding: 3%;
+    width: 90%; /* Adjusted width for smaller screens */
+    height: 60vh; /* Adjusted height for smaller screens */
+  }
+}
+
+@media screen and (max-width: 1080px) {
+  /* Styles for screens up to 1080 pixels wide */
+  #chart-container {
+    padding: 2%;
+    width: 80%; /* Adjusted width for smaller screens */
+    height: 50vh; /* Adjusted height for smaller screens */
+  }
+}
+
+@media screen and (max-width: 568px) {
+  /* Styles for screens up to 768 pixels wide */
+  #chart-container {
+    width: 20px; /* Adjusted height for smaller screens */
+  }
+
+  /* Additional styles for smaller screens */
+  label {
+    font-size: 14px;
+  }
+
+  select {
+    font-size: 12px;
+  }
+
+  button {
+    font-size: 12px;
+  }
+}
+      </style>
+      
+  </head>
+  <body style="margin: 0; width: fit-content; height: fit-content">
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 28px;
+        padding: 12px;
+      "
+    >
+      <div style="align-items: flex-start">
+        <h3 style="color: green">Alpha Charts</h3>
+      </div>
+      <script>
+        function updateWatermarkText() {
+          var selectedSymbol = document.getElementById("symbolSelect").value;
+          console.log(selectedSymbol);
+          chart.applyOptions({
+            watermark: {
+              visible: true,
+              fontSize: 24,
+              horzAlign: "center",
+              vertAlign: "center",
+              color: "rgba(14, 15, 14,0.5)",
+              text: selectedSymbol,
+            },
+          });
+        }
+      </script>
+      <div style="display: flex; align-items: center">
+        <label for="symbolSelect" style="color: #555">Select Symbol:</label>
+        <select
+          id="symbolSelect"
+          onchange="updateWatermarkText()"
+          style="
+            margin-right: 20px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+          "
+        >
+          {% for symbol in instrument_identifiers %}
+          <option value="{{ symbol }}">{{ symbol }}</option>
+          {% endfor %}
+        </select>
+        
+      </div>
+
+      <button
+        onclick="toggleTheme()"
+        style="
+          padding: 8px 12px;
+          background-color: #888;
+          color: #fff;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+        "
+      >
+        <img
+          src="./theme.png"
+          alt=""
+          style="vertical-align: middle; margin-right: 5px"
+        />
+        Change Theme
+      </button>
+      <script>
+        function toggleTheme() {
+          const body = document.body;
+          body.classList.toggle("dark-theme");
+
+          // Access the chart container and update its class
+          const chartContainer = document.getElementById("chart-container");
+          chartContainer.classList.toggle("dark-theme");
+        }
+      </script>
+    </div>
+    <div style="height: fit-content; width: min-content;">
+      <div
+        id="chart-container"
+        style="
+          width: fit-content;
+          height: fit-content;
+          padding-left: 2%;
+          padding-top: 2%;
+          padding-bottom: 2%;
+        "
+      ></div>
+    </div>
+
+    <!-- ... (previous HTML code) ... -->
+
+    <script>
+      // Add this function definition outside the event listener
+      function changeSymbol() {
+        var selectedSymbol = document.getElementById("symbolSelect").value;
+        fetchDataAndUpdateChart(selectedSymbol);
+      }
+      var chart;
+      document.addEventListener("DOMContentLoaded", function () {
+        // Create the chart outside of the fetchDataAndUpdateChart function
+        chart = LightweightCharts.createChart(
+          document.getElementById("chart-container"),
+          {
+            height: 650,
+            width: 1800,
+            timeScale: {
+              timeVisible: true,
+              secondsVisible: false,
+            },
+          }
+        );
+
+        var candlestickSeries = chart.addCandlestickSeries({
+          upColor: "#26a69a",
+          downColor: "#ef5350",
+          borderVisible: true,
+          wickVisible: true,
+          borderUpColor: "green",
+          borderDownColor: "red",
+          wickUpColor: "#26a69a",
+          wickDownColor: "#ef5350",
+        });
+
+        function updateWatermarkText() {
+          var selectedSymbol = document.getElementById("symbolSelect").value;
+          console.log(symbolSelect);
+          chart.applyOptions({
+            watermark: {
+              visible: true,
+              fontSize: 24,
+              horzAlign: "center",
+              vertAlign: "center",
+              color: "rgba(171, 71, 188, 0.5)",
+              text: selectedSymbol,
+            },
+          });
+        }
+
+        var volumeSeries = chart.addHistogramSeries({
+          priceFormat: {
+            type: "volume",
+          },
+          priceScaleId: "",
+          scaleMargins: {
+            top: 0.8,
+            bottom: 0.02,
+          },
+          overlay: true,
+          color: (bar) => (bar.close > bar.open ? "#26a69a" : "#ef5350"),
+        });
+
+        // Add a new line series for redline1
+        var redline1Series = chart.addLineSeries({
+          color: "#FF0000", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+
+        // Add a new line series for redline2
+        var redline2Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+
+        // Add a new line series for redline2
+        var redline3Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+
+        var redline4Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline5Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline6Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline7Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline8Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline9Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline10Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline11Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline12Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline13Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline14Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline15Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline16Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline17Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline18Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline19Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline20Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline21Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+        var redline22Series = chart.addLineSeries({
+          color: "#00FF00", // Choose a color for the line
+          lineWidth: 2, // Choose the line width
+        });
+
+        // Declare a new line series for livequery_data
+        //sellprice
+        var liveQuery1Series = chart.addLineSeries({
+          color: "#ef5350",
+          lineWidth: 2,
+        });
+
+        var liveQuery2Series = chart.addLineSeries({
+          color: "#26a69a",
+          lineWidth: 2,
+        });
+        chart.timeScale().fitContent();
+
+        function fetchDataAndUpdateChart(selectedSymbol) {
+          fetch("/chart/get_data?symbol=" + selectedSymbol)
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              // Group data by date and calculate the average redline values
+              const groupedData = {};
+              data.forEach((point) => {
+                const date = new Date(point.date).toISOString().split("T")[0];
+                if (!groupedData[date]) {
+                  groupedData[date] = {
+                    date,
+                    redline1Sum: 0,
+                    redline2Sum: 0,
+                    redline3Sum: 0,
+                    redline4Sum: 0,
+                    redline5Sum: 0,
+                    redline6Sum: 0,
+                    redline7Sum: 0,
+                    redline8Sum: 0,
+                    redline9Sum: 0,
+                    redline10Sum: 0,
+                    redline11Sum: 0,
+                    redline12Sum: 0,
+                    redline13Sum: 0,
+                    redline14Sum: 0,
+                    redline15Sum: 0,
+                    redline16Sum: 0,
+                    redline17Sum: 0,
+                    redline18Sum: 0,
+                    redline19Sum: 0,
+                    redline20Sum: 0,
+                    redline21Sum: 0,
+                    redline22Sum: 0,
+                    liveQuery1Series: 0,
+                    liveQuery2Series: 0,
+                    count: 0,
+                  };
+                }
+                if (isFinite(point.level1)) {
+                  groupedData[date].redline1Sum += parseFloat(point.level1);
+                  groupedData[date].count += 1;
+                }
+                if (isFinite(point.level2)) {
+                  groupedData[date].redline2Sum += parseFloat(point.level2);
+                }
+                if (isFinite(point.level3)) {
+                  groupedData[date].redline3Sum += parseFloat(point.level3);
+                }
+                if (isFinite(point.level4)) {
+                  groupedData[date].redline4Sum += parseFloat(point.level4);
+                }
+                if (isFinite(point.level5)) {
+                  groupedData[date].redline5Sum += parseFloat(point.level5);
+                }
+                if (isFinite(point.level6)) {
+                  groupedData[date].redline6Sum += parseFloat(point.level6);
+                }
+                if (isFinite(point.level7)) {
+                  groupedData[date].redline7Sum += parseFloat(point.level7);
+                }
+                if (isFinite(point.level8)) {
+                  groupedData[date].redline8Sum += parseFloat(point.level8);
+                }
+                if (isFinite(point.level9)) {
+                  groupedData[date].redline9Sum += parseFloat(point.level9);
+                }
+                if (isFinite(point.level10)) {
+                  groupedData[date].redline10Sum += parseFloat(point.level10);
+                }
+                if (isFinite(point.level11)) {
+                  groupedData[date].redline11Sum += parseFloat(point.level11);
+                }
+                if (isFinite(point.level12)) {
+                  groupedData[date].redline12Sum += parseFloat(point.level12);
+                }
+                if (isFinite(point.level13)) {
+                  groupedData[date].redline13Sum += parseFloat(point.level13);
+                }
+                if (isFinite(point.level14)) {
+                  groupedData[date].redline14Sum += parseFloat(point.level14);
+                }
+                if (isFinite(point.level15)) {
+                  groupedData[date].redline15Sum += parseFloat(point.level15);
+                }
+                if (isFinite(point.level16)) {
+                  groupedData[date].redline16Sum += parseFloat(point.level16);
+                }
+                if (isFinite(point.level17)) {
+                  groupedData[date].redline17Sum += parseFloat(point.level17);
+                }
+                if (isFinite(point.level18)) {
+                  groupedData[date].redline18Sum += parseFloat(point.level18);
+                }
+                if (isFinite(point.level19)) {
+                  groupedData[date].redline19Sum += parseFloat(point.level19);
+                }
+                if (isFinite(point.level20)) {
+                  groupedData[date].redline20Sum += parseFloat(point.level20);
+                }
+                if (isFinite(point.level21)) {
+                  groupedData[date].redline21Sum += parseFloat(point.level21);
+                }
+                if (isFinite(point.level22)) {
+                  groupedData[date].redline22Sum += parseFloat(point.level22);
+                }
+                if (isFinite(point.sellprice)) {
+                  groupedData[date].liveQuery1Series += parseFloat(
+                    point.sellprice
+                  );
+                }
+                if (isFinite(point.buyprice)) {
+                  groupedData[date].liveQuery2Series += parseFloat(
+                    point.buyprice
+                  );
+                }
+              });
+              console.log("Received data:", data);
+
+              data.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+              if (Array.isArray(data) && data.length > 0) {
+                var mappedData = data.map((point) => ({
+                  close: parseFloat(point.close),
+                  time: new Date(point.date).valueOf() / 1000,
+                  high: parseFloat(point.high),
+                  low: parseFloat(point.low),
+                  open: parseFloat(point.open),
+                }));
+
+                mappedData.sort((a, b) => a.time - b.time);
+
+                console.log("Mapped Data:", mappedData);
+
+                candlestickSeries.setData(mappedData);
+
+                volumeSeries.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: parseFloat(point.tradedqty),
+                    color: point.close > point.open ? "#26a69a" : "#ef5350",
+                  }))
+                );
+
+                //console.log('Redline Data:', data.map(point => ({ date: point.date, level1: point.level2, redline2: point.level3 })));
+
+                // Update the redline series with the redline data
+                redline1Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level1)
+                      ? parseFloat(point.level1)
+                      : null,
+                  }))
+                );
+
+                redline2Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level2)
+                      ? parseFloat(point.level2)
+                      : null,
+                  }))
+                );
+
+                redline3Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level3)
+                      ? parseFloat(point.level3)
+                      : null,
+                  }))
+                );
+
+                redline4Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level4)
+                      ? parseFloat(point.level4)
+                      : null,
+                  }))
+                );
+
+                redline5Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level5)
+                      ? parseFloat(point.level5)
+                      : null,
+                  }))
+                );
+                redline6Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level6)
+                      ? parseFloat(point.level6)
+                      : null,
+                  }))
+                );
+                redline7Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level7)
+                      ? parseFloat(point.level7)
+                      : null,
+                  }))
+                );
+                redline8Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level8)
+                      ? parseFloat(point.level8)
+                      : null,
+                  }))
+                );
+                redline9Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level9)
+                      ? parseFloat(point.level9)
+                      : null,
+                  }))
+                );
+                redline10Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level10)
+                      ? parseFloat(point.level10)
+                      : null,
+                  }))
+                );
+                redline11Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level11)
+                      ? parseFloat(point.level11)
+                      : null,
+                  }))
+                );
+                redline12Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level12)
+                      ? parseFloat(point.level12)
+                      : null,
+                  }))
+                );
+                redline13Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level13)
+                      ? parseFloat(point.level13)
+                      : null,
+                  }))
+                );
+                redline14Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level14)
+                      ? parseFloat(point.level14)
+                      : null,
+                  }))
+                );
+                redline15Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level15)
+                      ? parseFloat(point.level15)
+                      : null,
+                  }))
+                );
+                redline16Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level16)
+                      ? parseFloat(point.level16)
+                      : null,
+                  }))
+                );
+                redline17Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level17)
+                      ? parseFloat(point.level17)
+                      : null,
+                  }))
+                );
+                redline18Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level18)
+                      ? parseFloat(point.level18)
+                      : null,
+                  }))
+                );
+                redline19Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level19)
+                      ? parseFloat(point.level19)
+                      : null,
+                  }))
+                );
+                redline20Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level20)
+                      ? parseFloat(point.level20)
+                      : null,
+                  }))
+                );
+                redline21Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level21)
+                      ? parseFloat(point.level21)
+                      : null,
+                  }))
+                );
+                redline22Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: isFinite(point.level22)
+                      ? parseFloat(point.level22)
+                      : null,
+                  }))
+                );
+
+                liveQuery1Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: parseFloat(point.sellprice), // Replace with the appropriate field from livequery_data
+                  }))
+                );
+
+                liveQuery2Series.setData(
+                  data.map((point) => ({
+                    time: new Date(point.date).valueOf() / 1000,
+                    value: parseFloat(point.buyprice), // Replace with the appropriate field from livequery_data
+                  }))
+                );
+              } else {
+                console.error("Invalid or empty data:", data);
+              }
+
+              console.log("Chart data:", data);
+            })
+            .catch((error) => console.error("Error loading data:", error));
+        }
+
+        // Fetch and update data every 1 second
+        setInterval(() => {
+          var selectedSymbol = document.getElementById("symbolSelect").value;
+          fetchDataAndUpdateChart(selectedSymbol);
+        }, 1000);
+
+        // Initial fetch and chart update
+        var initialSymbol = document.getElementById("symbolSelect").value;
+        fetchDataAndUpdateChart(initialSymbol);
+      });
+    </script>
+  </body>
+</html>
