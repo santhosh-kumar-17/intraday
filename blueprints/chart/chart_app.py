@@ -6,7 +6,7 @@ import psycopg2
 chart_appbp = Blueprint('chart_appbp', __name__, template_folder='templates')
 
 # Replace these parameters with your PostgreSQL database credentials
-DB_HOST = '192.168.1.17'
+DB_HOST = '192.168.29.164'
 DB_PORT = '5432'
 DB_NAME = 'mydb'
 DB_USER = 'test'
@@ -28,7 +28,7 @@ def connect_to_db():
         return None
 
 # Routing function for the index page
-@chart_appbp.route("/chart_index")
+@chart_appbp.route("/data")
 def chart_index():
     # Connect to the database
     connection = connect_to_db()
@@ -42,7 +42,7 @@ def chart_index():
                 instrument_identifiers = [row[0] for row in cursor.fetchall()]
 
             # Render the template with instrument identifiers
-            return render_template('index.html', instrument_identifiers=instrument_identifiers)
+            return render_template('chart.html', instrument_identifiers=instrument_identifiers)
         except Exception as e:
             print(f"Error: Unable to execute the query. {e}")
             return jsonify({"error": f"Unable to execute the query. {e}"})
@@ -52,8 +52,10 @@ def chart_index():
     else:
         return jsonify({"error": "Unable to connect to the database."})
 
-
 @chart_appbp.route('/')
+def test():
+    return "test"
+@chart_appbp.route('/data')
 def get_data():
     # Connect to the database
     connection = connect_to_db()

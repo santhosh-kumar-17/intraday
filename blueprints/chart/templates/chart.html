@@ -179,8 +179,8 @@
         chart = LightweightCharts.createChart(
           document.getElementById("chart-container"),
           {
-            height: 650,
-            width: 1800,
+            height: 450,
+            width: 500,
             timeScale: {
               timeVisible: true,
               secondsVisible: false,
@@ -336,7 +336,7 @@
         chart.timeScale().fitContent();
 
         function fetchDataAndUpdateChart(selectedSymbol) {
-          fetch("/chart/get_data?symbol=" + selectedSymbol)
+          fetch("/chart/data" + selectedSymbol)
             .then((response) => {
               if (!response.ok) {
                 throw new Error("Network response was not ok");
