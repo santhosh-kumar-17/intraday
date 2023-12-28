@@ -1,69 +1,69 @@
 <!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JWT Authorization</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        #loginContainer {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        #loginForm {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        label {
-            font-weight: bold;
-        }
-
-        input {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        button {
-            padding: 10px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        #redirectButton {
-            margin-top: 10px;
-            background-color: #28a745;
-        }
-
-        #redirectButton:hover {
-            background-color: #218838;
-        }
-    </style>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>JWT Authorization</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+            }
+    
+            #loginContainer {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                text-align: center;
+            }
+    
+            #loginForm {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+    
+            label {
+                font-weight: bold;
+            }
+    
+            input {
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+    
+            button {
+                padding: 10px;
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+    
+            button:hover {
+                background-color: #0056b3;
+            }
+    
+            #redirectButton {
+                margin-top: 10px;
+                background-color: #28a745;
+            }
+    
+            #redirectButton:hover {
+                background-color: #218838;
+            }
+        </style>
+    </head>
 <body>
     <div id="loginContainer">
         <h1>Login</h1>
@@ -75,7 +75,10 @@
             <button type="button" onclick="login()">Login</button>
         </form>
 
-        <button id="redirectButton" style="display: none;" onclick="redirectToProtected()">Go to Protected Page</button>
+        <button id="redirectButton" style="display: none;" onclick="redirectToProtected()">Paid Chart page</button>
+
+        <!-- Display error message -->
+        <p id="errorMessage" style="color: red; display: none;"></p>
     </div>
 
     <script>
@@ -103,7 +106,9 @@
                 document.getElementById('redirectButton').style.display = 'block';
             } else {
                 const data = await response.json();
-                console.error('Authentication failed:', data.message);
+                // Display the error message
+                document.getElementById('errorMessage').innerText = data.message;
+                document.getElementById('errorMessage').style.display = 'block';
             }
         }
 

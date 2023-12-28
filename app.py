@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, redirect, url_for ,render_template, request
+from flask import Flask, jsonify, redirect, url_for, render_template, request
 import jwt
 import datetime
 from blueprints.chart.chart_app import chart_appbp
@@ -6,10 +6,13 @@ from blueprints.chart.chart_app import chart_appbp
 app = Flask(__name__)
 app.register_blueprint(chart_appbp, url_prefix='/chart')
 
-secret_key = "sadfkl"  # Replace with your actual secret key
+secret_key = "sadfksxdcfvgbn./'.;,lmgfl"  # Replace with your actual secret key
 
-# Example user (in a real application, fetch user from the database)
-example_user = {"username": "santhosh", "password": "sandi"}
+# Example users (in a real application, fetch users from the database)
+example_users = [
+    {"username": "santhosh", "password": "sandi"},
+    {"username": "santhosh22", "password": "sandi"}
+]
 
 # Protected route requiring authentication
 @app.route('/protected')
@@ -46,7 +49,7 @@ def login():
     entered_password = data.get('password')
 
     # Validate the username and password
-    if example_user["username"] == username and example_user["password"] == entered_password:
+    if any(user["username"] == username and user["password"] == entered_password for user in example_users):
         # Generate JWT token
         token = generate_jwt_token(username)
 
@@ -55,7 +58,8 @@ def login():
         response.set_cookie('jwt_token', token, httponly=True, secure=True)  # Secure flag for HTTPS
         return response
     else:
-        return jsonify({'message': 'Invalid credentials'}), 401
+        # Hint for an invalid password
+        return jsonify({'message': 'Invalid password. Please check your password and try again.'}), 401
 
 def generate_jwt_token(username):
     payload = {
