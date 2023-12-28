@@ -28,7 +28,7 @@ def connect_to_db():
         return None
 
 # Routing function for the index page
-@chart_appbp.route("/data")
+@chart_appbp.route("/")
 def chart_index():
     # Connect to the database
     connection = connect_to_db()
@@ -55,7 +55,7 @@ def chart_index():
 @chart_appbp.route('/')
 def test():
     return "test"
-@chart_appbp.route('/data')
+@chart_appbp.route('/get_data')
 def get_data():
     # Connect to the database
     connection = connect_to_db()
@@ -66,16 +66,26 @@ def get_data():
             selected_symbol = request.args.get('symbol')
 
             # Query data from the database
+            #query = "SELECT TO_CHAR(lasttradetime AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS') || 'Z' AS lasttradetime,open,high,low,close FROM bigtable where instrumentidentifier='BANKNIFTY01JUN2344600CE'"
+            #query = "select lasttradetime as date,open,high,low,close, tradedqty as rd,open as redline from indices_futures_d where instrumentidentifier='FUTIDX_MIDCPNIFTY_30OCT2023_XX_0' and lasttradetime between '2023-10-03 09:15:00+00' and '2023-10-03 15:30:00+00'"
+            #query = "SELECT DISTINCT to_timestamp(updated / 1000000000 ) AS date,min_o AS OPEN,min_h AS HIGH,min_l AS LOW,min_c AS CLOSE FROM crypto where ticker = 'X:BTCUSD' AND to_timestamp(updated/1000000000)::date = current_date"
+            #query = f"select lasttradetime as date, open, high, low, close, tradedqty as rd from indices_futures_d where instrumentidentifier='{selected_symbol}' union select lasttradetime as date, open, high, low, close, tradedqty as rd from indices_options_d where instrumentidentifier='{selected_symbol}' union select lasttradetime as date, open, high, low, close, tradedqty as rd from currency_futures_d where instrumentidentifier='{selected_symbol}' union select instrumentidentifier,lasttradetime, b1 as redline1,b2 as redline2 from options union select instrumentidentifier,lasttradetime, b1 as redline1,b2 as redline2 from futures union select instrumentidentifier,lasttradetime, b1 as redline1,b2 as redline2 from currency_futures1"
+            #query = "select lasttradetime as date, open, high, low, close,tradedqty as  rd from indices_futures_d where instrumentidentifier='FUTIDX_MIDCPNIFTY_30OCT2023_XX_0' and lasttradetimebetween '2023-10-03 09:15:00+00' and '2023-10-03 15:30:00+00'"
+
+
             query = f"select lasttradetime as date, open, high, low, close, tradedqty from table1_data where instrumentidentifier='{selected_symbol}' union select lasttradetime as date, open, high, low, close, tradedqty from table1_data1 where instrumentidentifier='{selected_symbol}'"
 
+            #redline_query = f"select lasttradetime as date,level1 ,level2 ,level3,level4,level5,level6,level7,level8,level9,level10  from table1 where instrumentidentifier='{selected_symbol}'"
             redline_query = f" select lasttradetime as date,level1,level2,level3,level4,level5,level6,level7,level8,level9,level10,null as level11,null as level12,null as level13,null as level14,null as level15,null as level16,null as level17,null as level18,null as level19,null as level20,null as level21,null as level22  from table1 where instrumentidentifier='{selected_symbol}'  union select lasttradetime as date,level1,level2,level3,level4,level5,level6,level7,level8,level9,level10,level11,level12,level13,level14,level15,level16,level17,level18,level19,level20,level21,level22 from table2 where instrumentidentifier='{selected_symbol}'"
 
+            #query = f"select date, open, high, low, close, rd from bigtablecopy where instrumentidentifier='{selected_symbol}' and date between '2023-06-01 09:15:00+00' and '2023-06-01 15:30:00+00'"
             with connection, connection.cursor() as cursor:
                 cursor.execute(query)
                 data = pd.DataFrame(cursor.fetchall(), columns=[desc[0] for desc in cursor.description])
 
                 cursor.execute(redline_query)
                 redline_data = pd.DataFrame(cursor.fetchall(), columns=[desc[0] for desc in cursor.description])
+
 
             # Combine the main data and redline data
             data['level1'] = redline_data['level1']
@@ -100,6 +110,8 @@ def get_data():
             data['level20'] = redline_data['level20']
             data['level21'] = redline_data['level21']
             data['level22'] = redline_data['level22']
+
+        
 
             # Replace NaN values with None in the DataFrame
             data = data.where(pd.notna(data), None)

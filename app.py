@@ -29,7 +29,7 @@ def protected():
     else:
         return redirect(url_for('index'))
 
-@app.route('/chart')
+@app.route('/chart/')
 def chart():
     return render_template('chart.html')
     
