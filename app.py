@@ -1,7 +1,11 @@
+import streamlit as st
 from flask import Flask, jsonify, redirect, url_for, render_template, request
 import jwt
 import datetime
 from blueprints.chart.chart_app import chart_appbp
+
+def init_connection():
+    return psycopg2.connect(**st.secrets["postgres"])
 
 app = Flask(__name__)
 app.register_blueprint(chart_appbp, url_prefix='/chart')
